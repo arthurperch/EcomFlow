@@ -11,5 +11,5 @@ export default defineManifest({
         service_worker: "background.js"
     },
     permissions: ["storage", "alarms"],
-    host_permissions: ["http://localhost:8080/*"]
+    host_permissions: ["http://localhost:3000/*", "http://localhost:8080/*"]
 });

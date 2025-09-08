@@ -7,9 +7,21 @@
     <title>EcomFlow</title>
 </head>
 
+
 <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+        <style>
+            :root { --popup-width: 400px; --popup-min-height: 560px; }
+            *, *::before, *::after { box-sizing: border-box; }
+            html, body, #root { margin: 0; padding: 0; }
+            html, body {
+                width: var(--popup-width);
+                min-height: var(--popup-min-height);
+                background: transparent;
+            }
+            #root { width: var(--popup-width); }
+        </style>
+        <div id="root"></div>
+        <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>

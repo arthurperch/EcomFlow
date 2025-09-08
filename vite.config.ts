@@ -7,5 +7,15 @@ export default defineConfig({
     plugins: [react(), crx({ manifest })],
     build: {
         outDir: 'dist'
+    },
+    server: {
+        cors: {
+            origin: '*'
+        },
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': '*',
+            'Access-Control-Allow-Headers': '*'
+        }
     }
 });

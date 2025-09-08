@@ -1,65 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
-import DuplicateChecker from './pages/DuplicateChecker';
-import ProductHunter from './pages/ProductHunter';
-import BulkLister from './pages/BulkLister';
-import ImageTemplate from './pages/ImageTemplate';
-import Tracker from './pages/Tracker';
+import React from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import BulkLister from "./pages/BulkLister";
+import ProductHunter from "./pages/ProductHunter";
+import DuplicateChecker from "./pages/DuplicateChecker";
+import ImageTemplate from "./pages/ImageTemplate";
+import Tracker from "./pages/Tracker";
+import CompetitorResearch from "./pages/CompetitorResearch";
+import BoostMyListings from "./pages/BoostMyListings";
+import "./PopupRoot.css";
 
-const App: React.FC = () => {
-    const [health, setHealth] = useState<'ok' | 'error' | null>(null);
-    const [ebayPrice, setEbayPrice] = useState<number | null>(null);
-
-    useEffect(() => {
-        fetch('http://localhost:8080/health')
-            .then((response) => {
-                if (response.ok) setHealth('ok');
-                else throw new Error('Health check failed');
-            })
-            .catch(() => setHealth('error'));
-    }, []);
-
-    const computePrice = async () => {
-        const response = await fetch('http://localhost:8080/price/compute', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                mode: 'sustain',
-                amazonPrice: 7.5,
-                pct: 100,
-                protective: [{ price_trigger: 7.5, protective_price: 15 }]
-            })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            setEbayPrice(data.ebayPrice);
+const PopupMenu: React.FC = () => {
+    const menuBtnStyle: React.CSSProperties = {
+        borderRadius: 10,
+        padding: "12px 18px",
+        background: "#f3f4f6",
+        color: "#3730a3",
+        border: "none",
+        textAlign: "left",
+        fontWeight: 600,
+        fontSize: 16,
+        cursor: "pointer",
+        marginBottom: 2,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        transition: "background 0.2s, color 0.2s",
+        textDecoration: "none",
+        display: "block",
+    };
+    const openTab = (hash: string) => {
+        if (chrome && chrome.tabs && chrome.runtime && chrome.runtime.getURL) {
+            chrome.tabs.create({ url: chrome.runtime.getURL(`index.html#${hash}`) });
         }
     };
-
     return (
-        <div style={{ width: 360, padding: 16, fontFamily: 'Arial, sans-serif' }}>
-            <header style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>EcomFlow</header>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <Link to="/duplicate-checker">Open Duplicate Checker</Link>
-                <Link to="/product-hunter">Open Product Hunter</Link>
-                <Link to="/bulk-lister">Open Bulk Lister</Link>
-                <Link to="/image-template">Open Image Template</Link>
-                <Link to="/tracker">Open Tracker</Link>
-                {/* Removed links for Competitor Research and Boost My Listings temporarily */}
-            </nav>
-            <div style={{ marginTop: 16, fontSize: 14 }}>
-                Health: {health === 'ok' ? '✅' : health === 'error' ? '❌' : '...'}
+        <nav style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 18 }}>
+            <button style={menuBtnStyle} onClick={() => openTab("/bulk-lister")}>Open Bulk Lister</button>
+            <button style={menuBtnStyle} onClick={() => openTab("/product-hunter")}>Open Product Hunter</button>
+            <a href="#/duplicate-checker" style={menuBtnStyle}>Open Duplicate Checker</a>
+            <a href="#/image-template" style={menuBtnStyle}>Open Image Template</a>
+            <a href="#/tracker" style={menuBtnStyle}>Open Tracker</a>
+            <a href="#/competitor-research" style={menuBtnStyle}>Open Competitor Research</a>
+            <a href="#/boost-my-listings" style={menuBtnStyle}>Boost My Listings</a>
+        </nav>
+    );
+};
+
+const App: React.FC = () => {
+    const location = useLocation();
+    if (location.pathname === "/bulk-lister") return <BulkLister />;
+    if (location.pathname === "/product-hunter") return <ProductHunter />;
+    if (location.pathname === "/" || location.hash === "" || location.hash === "#/") {
+        return (
+            <div className="popup-root" style={{ position: "relative", width: "100%", minHeight: "420px" }}>
+                <header style={{ fontSize: 24, fontWeight: 800, marginBottom: 24, letterSpacing: "-1px", color: "#3730a3", textAlign: "left" }}>
+                    EcomFlow
+                </header>
+                <PopupMenu />
             </div>
-            <Routes>
-                <Route path="/duplicate-checker" element={<DuplicateChecker />} />
-                <Route path="/product-hunter" element={<ProductHunter />} />
-                <Route path="/bulk-lister" element={<BulkLister />} />
-                <Route path="/image-template" element={<ImageTemplate />} />
-                <Route path="/tracker" element={<Tracker />} />
-                {/* Removed routes for Competitor Research and Boost My Listings temporarily */}
-            </Routes>
-        </div>
+        );
+    }
+    return (
+        <Routes>
+            <Route path="/duplicate-checker" element={<DuplicateChecker />} />
+            <Route path="/image-template" element={<ImageTemplate />} />
+            <Route path="/tracker" element={<Tracker />} />
+            <Route path="/competitor-research" element={<CompetitorResearch />} />
+            <Route path="/boost-my-listings" element={<BoostMyListings />} />
+        </Routes>
     );
 };
 
