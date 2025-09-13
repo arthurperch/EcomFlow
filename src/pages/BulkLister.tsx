@@ -83,12 +83,31 @@ type State = typeof defaultState;
 
 const BulkLister: React.FC = () => {
     const [state, setState] = useState<State>(defaultState);
+    const [log, setLog] = useState<string>("");
     // Handlers
     const handleClear = () => setState(s => ({ ...s, links: "" }));
     const handleReset = () => setState(defaultState);
     const handlePause = () => setState(s => ({ ...s, paused: true }));
     const handleResume = () => setState(s => ({ ...s, paused: false }));
     const handleStatusReport = () => console.log(state);
+    // Opti-List integration
+    const handleOptiList = async () => {
+        const urls = state.links.split('\n').map(s => s.trim()).filter(Boolean);
+        if (!urls.length) {
+            setLog(l => l + '\nNo links provided.');
+            return;
+        }
+        setLog(l => l + `\nStarting Opti-List for ${urls.length} URLs...`);
+        try {
+            // @ts-ignore
+            const res = await chrome.runtime.sendMessage({ type: 'OPTL_SET_THREADS', threads: state.threadCount });
+            // @ts-ignore
+            const result = await chrome.runtime.sendMessage({ type: 'OPTL_START', urls });
+            setLog(l => l + '\n' + JSON.stringify(result, null, 2));
+        } catch (e) {
+            setLog(l => l + `\nError: ${String(e)}`);
+        }
+    };
     // Progress bar width
     const progress = Math.min(100, Math.max(0, state.percent));
     return (
@@ -112,7 +131,7 @@ const BulkLister: React.FC = () => {
                             />
                         </div>
                         <div className="bl-form-row bl-btn-row bl-btn-row-wide">
-                            <Button variant="accent" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Opti-List</Button>
+                            <Button variant="accent" onClick={handleOptiList} style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Opti-List</Button>
                             <Button variant="secondary" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Seo-List</Button>
                             <Button variant="secondary" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Standard-List</Button>
                             <Button variant="yellow" onClick={handleClear} ariaLabel="Clear Links" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Clear Links</Button>
@@ -229,6 +248,9 @@ const BulkLister: React.FC = () => {
                                 <Button variant="secondary">Import</Button>
                                 <Button variant="accent">Add</Button>
                             </div>
+                        </div>
+                        <div className="bl-form-row">
+                            <pre style={{ background: '#f8f8f8', color: '#333', fontSize: 13, padding: 10, borderRadius: 6, minHeight: 40, marginTop: 10, maxHeight: 200, overflow: 'auto' }}>{log}</pre>
                         </div>
                     </form>
                 </Card>
