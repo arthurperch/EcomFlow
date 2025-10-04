@@ -90,24 +90,64 @@ const BulkLister: React.FC = () => {
     const handlePause = () => setState(s => ({ ...s, paused: true }));
     const handleResume = () => setState(s => ({ ...s, paused: false }));
     const handleStatusReport = () => console.log(state);
-    // Opti-List integration
-    const handleOptiList = async () => {
+    
+    // eBay Automation - Opens eBay listing page for each Amazon URL
+    const startEbayAutomation = async (listType: 'opti' | 'seo' | 'standard') => {
         const urls = state.links.split('\n').map(s => s.trim()).filter(Boolean);
         if (!urls.length) {
-            setLog(l => l + '\nNo links provided.');
+            setLog(l => l + '\nNo Amazon links provided.');
+            alert('Please enter Amazon product URLs first.');
             return;
         }
-        setLog(l => l + `\nStarting Opti-List for ${urls.length} URLs...`);
+
+        setLog(l => l + `\nStarting ${listType.toUpperCase()}-List automation for ${urls.length} URLs...`);
+        setLog(l => l + '\nOpening eBay listing pages...');
+
         try {
-            // @ts-ignore
-            const res = await chrome.runtime.sendMessage({ type: 'OPTL_SET_THREADS', threads: state.threadCount });
-            // @ts-ignore
-            const result = await chrome.runtime.sendMessage({ type: 'OPTL_START', urls });
-            setLog(l => l + '\n' + JSON.stringify(result, null, 2));
+            // Store the list type and URLs for the automation
+            await chrome.storage.local.set({ 
+                automationType: listType,
+                pendingUrls: urls,
+                automationInProgress: true 
+            });
+
+            // Open eBay listing page for each URL with a small delay between tabs
+            for (let i = 0; i < urls.length; i++) {
+                const url = urls[i];
+                setLog(l => l + `\n[${i + 1}/${urls.length}] Processing: ${url}`);
+
+                // Store individual product data
+                await chrome.storage.local.set({
+                    [`pendingProduct_${i}`]: {
+                        url,
+                        amazonUrl: url,
+                        index: i,
+                        total: urls.length,
+                        listType
+                    }
+                });
+
+                // Open eBay create listing page in new tab
+                setTimeout(() => {
+                    chrome.tabs.create({ 
+                        url: 'https://www.ebay.com/sell/create',
+                        active: i === 0 // Only make first tab active
+                    });
+                }, i * 500); // 500ms delay between tabs to avoid overwhelming
+            }
+
+            setLog(l => l + `\n✓ Opened ${urls.length} eBay listing tabs`);
+            setLog(l => l + '\nPlease complete the listings in each tab.');
         } catch (e) {
             setLog(l => l + `\nError: ${String(e)}`);
+            alert('Automation failed: ' + String(e));
         }
     };
+
+    // Handler for each list type
+    const handleOptiList = () => startEbayAutomation('opti');
+    const handleSeoList = () => startEbayAutomation('seo');
+    const handleStandardList = () => startEbayAutomation('standard');
     // Progress bar width
     const progress = Math.min(100, Math.max(0, state.percent));
     return (
@@ -132,8 +172,8 @@ const BulkLister: React.FC = () => {
                         </div>
                         <div className="bl-form-row bl-btn-row bl-btn-row-wide">
                             <Button variant="accent" onClick={handleOptiList} style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Opti-List</Button>
-                            <Button variant="secondary" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Seo-List</Button>
-                            <Button variant="secondary" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Standard-List</Button>
+                            <Button variant="secondary" onClick={handleSeoList} style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Seo-List</Button>
+                            <Button variant="secondary" onClick={handleStandardList} style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Standard-List</Button>
                             <Button variant="yellow" onClick={handleClear} ariaLabel="Clear Links" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Clear Links</Button>
                             <Button variant="yellow" onClick={handleReset} ariaLabel="Reset & Terminate" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Reset & Terminate</Button>
                             <Button variant="secondary" onClick={handleStatusReport} ariaLabel="Status Report" style={{ fontSize: '1rem', padding: '10px 18px', minWidth: 120 }}>Status Report</Button>

@@ -1,11 +1,111 @@
 
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ProductHunter.css';
 
+interface ProductData {
+  url: string;
+  title: string;
+  description: string;
+  price?: string;
+  imageUrl?: string;
+  asin?: string;
+}
+
 const ProductHunter: React.FC = () => {
-        const [optionsOpen, setOptionsOpen] = useState(false);
+    const [optionsOpen, setOptionsOpen] = useState(false);
+
+    // Automation handler for Bulk List button
+    const handleBulkListAutomation = async () => {
+        if (!confirm('Start eBay listing automation with the first product?')) {
+            return;
+        }
+
+        // Extract product data from the first row
+        const product = extractFirstProductData();
+        
+        if (!product) {
+            alert('No products found. Please run a search first.');
+            return;
+        }
+
+        console.log('Starting eBay automation with:', product);
+
+        try {
+            // Store product data in chrome storage
+            await chrome.storage.local.set({ 
+                pendingProduct: product,
+                automationInProgress: true 
+            });
+
+            // Open eBay listing page in new tab
+            const ebayUrl = 'https://www.ebay.com/help/selling/listings/creating-listing?id=4105';
+            chrome.tabs.create({ url: ebayUrl });
+        } catch (error) {
+            console.error('Automation error:', error);
+            alert('Failed to start automation: ' + error);
+        }
+    };
+
+    // Extract product data from first table row
+    const extractFirstProductData = (): ProductData | null => {
+        const table = document.getElementById('productTable');
+        if (!table) return null;
+
+        const tbody = table.querySelector('tbody');
+        if (!tbody) return null;
+
+        const firstRow = tbody.querySelector('tr');
+        if (!firstRow) return null;
+
+        try {
+            const cells = firstRow.querySelectorAll('td');
+            
+            const imageCell = cells[0];
+            const img = imageCell?.querySelector('img');
+            const imageUrl = img?.src || '';
+
+            const titleCell = cells[1];
+            const titleLink = titleCell?.querySelector('a');
+            const title = titleLink?.textContent?.trim() || '';
+            const url = titleLink?.href || '';
+
+            const priceCell = cells[2];
+            const price = priceCell?.textContent?.trim() || '';
+
+            const asinCell = cells[4];
+            const asin = asinCell?.textContent?.trim() || '';
+
+            const description = `${title}\n\nPrice: ${price}\nASIN: ${asin}`;
+
+            return { url, title, description, price, imageUrl, asin };
+        } catch (error) {
+            console.error('Error extracting product data:', error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        // Attach click handler to the Bulk List button after component mounts
+        const attachHandler = () => {
+            const bulkListBtn = document.getElementById('exportResultsToBulk');
+            if (bulkListBtn) {
+                bulkListBtn.addEventListener('click', handleBulkListAutomation);
+            }
+        };
+
+        // Wait for DOM to be ready
+        setTimeout(attachHandler, 100);
+
+        return () => {
+            const bulkListBtn = document.getElementById('exportResultsToBulk');
+            if (bulkListBtn) {
+                bulkListBtn.removeEventListener('click', handleBulkListAutomation);
+            }
+        };
+    }, []);
+
     return (
         <div className="ph-root" style={{ minHeight: '100vh', width: '100vw', background: '#181e27' }}>
             <main className="ph-main" style={{ width: '100vw', maxWidth: '100vw', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

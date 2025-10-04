@@ -10,6 +10,18 @@ export default defineManifest({
     background: {
         service_worker: "background.js"
     },
-    permissions: ["storage", "alarms"],
-    host_permissions: ["http://localhost:3000/*", "http://localhost:8080/*"]
+    permissions: ["storage", "alarms", "tabs", "scripting"],
+    host_permissions: [
+        "http://localhost:3000/*", 
+        "http://localhost:8080/*",
+        "https://www.ebay.com/*",
+        "https://www.amazon.com/*"
+    ],
+    content_scripts: [
+        {
+            matches: ["https://www.ebay.com/*"],
+            js: ["src/content/ebay-automation.ts"],
+            run_at: "document_end"
+        }
+    ]
 });

@@ -11,10 +11,36 @@
   },
   "permissions": [
     "storage",
-    "alarms"
+    "alarms",
+    "tabs",
+    "scripting"
   ],
   "host_permissions": [
     "http://localhost:3000/*",
-    "http://localhost:8080/*"
+    "http://localhost:8080/*",
+    "https://www.ebay.com/*",
+    "https://www.amazon.com/*"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "assets/ebay-automation.ts-155f12b1.js"
+      ],
+      "matches": [
+        "https://www.ebay.com/*"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://www.ebay.com/*"
+      ],
+      "resources": [
+        "assets/ebay-automation.ts-155f12b1.js"
+      ],
+      "use_dynamic_url": false
+    }
   ]
 }
