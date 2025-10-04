@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/ebay-automation.ts-155f12b1.js"
+        "assets/ebay-automation.ts-983dd63b.js"
       ],
       "matches": [
         "https://www.ebay.com/*"
@@ -38,7 +38,7 @@
         "https://www.ebay.com/*"
       ],
       "resources": [
-        "assets/ebay-automation.ts-155f12b1.js"
+        "assets/ebay-automation.ts-983dd63b.js"
       ],
       "use_dynamic_url": false
     }

@@ -101,7 +101,7 @@ const BulkLister: React.FC = () => {
         }
 
         setLog(l => l + `\nStarting ${listType.toUpperCase()}-List automation for ${urls.length} URLs...`);
-        setLog(l => l + '\nOpening eBay listing pages...');
+        setLog(l => l + '\nOpening eBay listing pages with full Amazon data...');
 
         try {
             // Store the list type and URLs for the automation
@@ -128,16 +128,18 @@ const BulkLister: React.FC = () => {
                 });
 
                 // Open eBay create listing page in new tab
+                // Using direct sell page for better compatibility
                 setTimeout(() => {
                     chrome.tabs.create({ 
-                        url: 'https://www.ebay.com/sell/create',
+                        url: 'https://www.ebay.com/sl/sell',
                         active: i === 0 // Only make first tab active
                     });
-                }, i * 500); // 500ms delay between tabs to avoid overwhelming
+                }, i * 800); // 800ms delay between tabs for Amazon fetching
             }
 
             setLog(l => l + `\n✓ Opened ${urls.length} eBay listing tabs`);
-            setLog(l => l + '\nPlease complete the listings in each tab.');
+            setLog(l => l + '\n✓ Each tab will auto-fetch Amazon product details and auto-fill the form');
+            setLog(l => l + '\nPlease wait for auto-fill to complete in each tab, then finish the listings manually.');
         } catch (e) {
             setLog(l => l + `\nError: ${String(e)}`);
             alert('Automation failed: ' + String(e));
