@@ -101,7 +101,8 @@ const BulkLister: React.FC = () => {
         }
 
         setLog(l => l + `\nStarting ${listType.toUpperCase()}-List automation for ${urls.length} URLs...`);
-        setLog(l => l + '\nOpening eBay listing pages with full Amazon data...');
+        setLog(l => l + '\nOpening eBay listing pages...');
+        setLog(l => l + '\nEach tab will auto-fetch Amazon data and fill the form...');
 
         try {
             // Store the list type and URLs for the automation
@@ -111,7 +112,7 @@ const BulkLister: React.FC = () => {
                 automationInProgress: true 
             });
 
-            // Open eBay listing page for each URL with a small delay between tabs
+            // Open eBay listing page for each URL with delay between tabs
             for (let i = 0; i < urls.length; i++) {
                 const url = urls[i];
                 setLog(l => l + `\n[${i + 1}/${urls.length}] Processing: ${url}`);
@@ -127,19 +128,21 @@ const BulkLister: React.FC = () => {
                     }
                 });
 
-                // Open eBay create listing page in new tab
-                // Using direct sell page for better compatibility
+                // Open eBay sell page in new tab (will auto-click Create Listing button)
                 setTimeout(() => {
                     chrome.tabs.create({ 
                         url: 'https://www.ebay.com/sl/sell',
                         active: i === 0 // Only make first tab active
                     });
-                }, i * 800); // 800ms delay between tabs for Amazon fetching
+                }, i * 800); // 800ms delay to allow time for Amazon fetch
             }
 
             setLog(l => l + `\n✓ Opened ${urls.length} eBay listing tabs`);
-            setLog(l => l + '\n✓ Each tab will auto-fetch Amazon product details and auto-fill the form');
-            setLog(l => l + '\nPlease wait for auto-fill to complete in each tab, then finish the listings manually.');
+            setLog(l => l + '\n✓ Each tab will automatically:');
+            setLog(l => l + '\n  1. Click "Create Listing" button');
+            setLog(l => l + '\n  2. Fetch full product data from Amazon');
+            setLog(l => l + '\n  3. Auto-fill title, description, price, condition, quantity');
+            setLog(l => l + '\n\nPlease wait for auto-fill to complete, then add images and publish!');
         } catch (e) {
             setLog(l => l + `\nError: ${String(e)}`);
             alert('Automation failed: ' + String(e));
