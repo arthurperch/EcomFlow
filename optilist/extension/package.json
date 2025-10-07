@@ -1,0 +1,17 @@
+{
+  "name": "optilist-extension",
+  "version": "0.1.0",
+  "main": "dist/background.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && npm run copy",
+    "copy": "npm run copy:content && npm run copy:popup && npm run copy:styles",
+    "copy:content": "mkdir -p dist/src/content && copy src/content/*.js dist/src/content/",
+    "copy:popup": "copy src/popup.html dist/src/ && copy src/popup.js dist/src/",
+    "copy:styles": "copy src/styles.css dist/src/"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.6",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Opti‑List",
+  "version": "0.1.0",
+  "action": { "default_popup": "src/popup.html" },
+  "permissions": [
+    "tabs", "scripting", "storage", "activeTab"
+  ],
+  "host_permissions": [
+    "*://*.amazon.com/*",
+    "*://www.amazon.com/*",
+    "*://smile.amazon.com/*",
+    "*://www.amazon.co.uk/*",
+    "*://www.amazon.de/*",
+    "*://www.amazon.ca/*",
+    "*://www.ebay.com/*"
+  ],
+  "background": { "service_worker": "src/background.js", "type": "module" },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.amazon.com/*",
+        "*://www.amazon.com/*",
+        "*://smile.amazon.com/*",
+        "*://www.amazon.co.uk/*",
+        "*://www.amazon.de/*",
+        "*://www.amazon.ca/*"
+      ],
+      "js": ["src/content/scrape-amazon.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://www.ebay.com/*"],
+      "js": ["src/content/fill-ebay.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

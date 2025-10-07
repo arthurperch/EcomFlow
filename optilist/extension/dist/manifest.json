@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "EcomFlow",
+  "version": "0.0.1",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "sw.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "alarms",
+    "tabs",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "*://*.amazon.com/*",
+    "*://www.amazon.com/*",
+    "*://smile.amazon.com/*",
+    "*://www.amazon.co.uk/*",
+    "*://www.amazon.de/*",
+    "*://www.amazon.ca/*",
+    "*://www.ebay.com/*",
+    "http://localhost:3000/*",
+    "http://localhost:8080/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.amazon.com/*",
+        "*://www.amazon.com/*",
+        "*://smile.amazon.com/*",
+        "*://www.amazon.co.uk/*",
+        "*://www.amazon.de/*",
+        "*://www.amazon.ca/*"
+      ],
+      "js": ["content/scrape-amazon.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://www.ebay.com/*"],
+      "js": ["content/fill-ebay.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

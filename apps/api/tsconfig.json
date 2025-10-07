@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@ecomflow/core": ["../../packages/core/dist"]
+    },
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "esnext",
+    "strict": true
+  }
+}

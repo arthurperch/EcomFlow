@@ -1,0 +1,1 @@
+{"version":3,"file":"pricing.d.ts","sourceRoot":"","sources":["../src/pricing.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,cAAc,GAAG;IAAE,aAAa,EAAE,MAAM,CAAC;IAAC,gBAAgB,EAAE,MAAM,CAAA;CAAE,CAAC;AAEjF,wBAAgB,kBAAkB,CAAC,WAAW,EAAE,MAAM,EAAE,eAAe,SAAM,UAE5E;AAED,wBAAgB,mBAAmB,CACjC,WAAW,EAAE,MAAM,EACnB,gBAAgB,SAAM,EACtB,UAAU,GAAE,cAAc,EAAO,UAMlC"}
