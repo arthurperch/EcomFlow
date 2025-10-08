@@ -1,1 +1,1 @@
-import './assets/background.js-b74afd58.js';
+import './assets/background-service.ts-212742b2.js';

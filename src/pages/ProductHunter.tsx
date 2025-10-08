@@ -5,12 +5,12 @@ import React, { useState, useEffect } from 'react';
 import './ProductHunter.css';
 
 interface ProductData {
-  url: string;
-  title: string;
-  description: string;
-  price?: string;
-  imageUrl?: string;
-  asin?: string;
+    url: string;
+    title: string;
+    description: string;
+    price?: string;
+    imageUrl?: string;
+    asin?: string;
 }
 
 const ProductHunter: React.FC = () => {
@@ -24,7 +24,7 @@ const ProductHunter: React.FC = () => {
 
         // Extract product data from the first row
         const product = extractFirstProductData();
-        
+
         if (!product) {
             alert('No products found. Please run a search first.');
             return;
@@ -34,9 +34,9 @@ const ProductHunter: React.FC = () => {
 
         try {
             // Store product data in chrome storage
-            await chrome.storage.local.set({ 
+            await chrome.storage.local.set({
                 pendingProduct: product,
-                automationInProgress: true 
+                automationInProgress: true
             });
 
             // Open eBay listing page in new tab
@@ -61,7 +61,7 @@ const ProductHunter: React.FC = () => {
 
         try {
             const cells = firstRow.querySelectorAll('td');
-            
+
             const imageCell = cells[0];
             const img = imageCell?.querySelector('img');
             const imageUrl = img?.src || '';
@@ -162,16 +162,16 @@ const ProductHunter: React.FC = () => {
                                     <button id="applyFiltersForResults" className="btn" style={{ fontSize: '1.1rem', padding: '10px 22px' }}>Apply Filters</button>
                                     <button id="sortButtonForResults" className="btn" style={{ fontSize: '1.1rem', padding: '10px 22px' }}>Sort Price: High to Low</button>
                                 </div>
-                                            <div className="progress-container" style={{ margin: '18px 0' }}>
-                                                <p style={{ fontSize: '1.1rem', color: '#7ecbff' }}>Progress <span className="progress-percentage"></span></p>
-                                                <div id="progress-bar" style={{ width: '100%', height: 16, background: '#eee', borderRadius: 8, overflow: 'hidden', marginTop: 6 }}>
-                                                    <span className="progress-percentage" style={{ display: 'block', height: '100%', background: '#1e90ff', borderRadius: 8, width: 0, transition: 'width 0.3s' }}></span>
-                                                </div>
-                                                <div className="ph-results-actions" style={{ marginTop: 18, gap: 18, display: 'flex', flexDirection: 'row' }}>
-                                                    <button id="pause_button" className="btn" style={{ fontSize: '1.15rem', padding: '12px 28px' }} disabled>Pause</button>
-                                                    <button id="resume_button" className="btn" style={{ fontSize: '1.15rem', padding: '12px 28px' }}>Resume</button>
-                                                </div>
-                                            </div>
+                                <div className="progress-container" style={{ margin: '18px 0' }}>
+                                    <p style={{ fontSize: '1.1rem', color: '#7ecbff' }}>Progress <span className="progress-percentage"></span></p>
+                                    <div id="progress-bar" style={{ width: '100%', height: 16, background: '#eee', borderRadius: 8, overflow: 'hidden', marginTop: 6 }}>
+                                        <span className="progress-percentage" style={{ display: 'block', height: '100%', background: '#1e90ff', borderRadius: 8, width: 0, transition: 'width 0.3s' }}></span>
+                                    </div>
+                                    <div className="ph-results-actions" style={{ marginTop: 18, gap: 18, display: 'flex', flexDirection: 'row' }}>
+                                        <button id="pause_button" className="btn" style={{ fontSize: '1.15rem', padding: '12px 28px' }} disabled>Pause</button>
+                                        <button id="resume_button" className="btn" style={{ fontSize: '1.15rem', padding: '12px 28px' }}>Resume</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -194,54 +194,54 @@ const ProductHunter: React.FC = () => {
                             <label htmlFor="max_similiar_niche_items" style={{ fontSize: '1.1rem' }}>Maximum Similar Niche Items</label>
                             <input type="number" id="max_similiar_niche_items" defaultValue={2} min={0} max={9999} style={{ fontSize: '1.1rem', padding: '10px 16px', borderRadius: 8 }} />
                         </div>
-                                    <div className="settings-group" style={{ marginBottom: 18 }}>
-                                                                        <button
-                                                                            className={`btn advance-options-btn${!optionsOpen ? ' highlight' : ''}`}
-                                                                            style={{ fontSize: '1.15rem', padding: '12px 28px', width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}
-                                                                            onClick={() => setOptionsOpen(v => !v)}
-                                                                        >
-                                                                            <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                                                Advance Options
-                                                                                {!optionsOpen && (
-                                                                                    <span className="more-options-badge" style={{ background: '#ffe066', color: '#222', borderRadius: 8, fontSize: '0.95rem', padding: '2px 10px', marginLeft: 10, fontWeight: 600 }}>
-                                                                                        More options
-                                                                                    </span>
-                                                                                )}
-                                                                            </span>
-                                                                            <span
-                                                                                className={`arrow${optionsOpen ? ' open' : ''}`}
-                                                                                style={{ fontSize: 22, marginLeft: 8, transition: 'transform 0.2s', display: 'inline-block', transform: optionsOpen ? 'rotate(180deg)' : 'rotate(0deg)', color: !optionsOpen ? '#ffb300' : '#7ecbff' }}
-                                                                            >
-                                                                                ▼
-                                                                            </span>
-                                                                        </button>
-                                        {optionsOpen && (
-                                            <div className="settings-options-checks" style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 18 }}>
-                                                <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="prioritizeAmazonChoice" defaultChecked /> Amazon Choice (Prioritize)</label>
-                                                <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="prioritizeBestSellers" defaultChecked /> Best Seller (Prioritize)</label>
-                                                <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="sort-by-reviews" defaultChecked /> Sort By: Highest Reviewed</label>
-                                                <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="duplicate_protection" defaultChecked /> Don't Get Duplicate Item</label>
-                                                <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="vero_protection_switch" defaultChecked /> Don't Get VERO Item</label>
-                                                <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="remove_books" defaultChecked /> Remove Books</label>
-                                                <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="amazon_is_seller" /> Amazon is the Seller</label>
-                                                <label htmlFor="required_keywords_checkbox" style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                    <input type="checkbox" id="required_keywords_checkbox" style={{ marginRight: 8 }} /> Required Keywords In Title — <a href="#" id="openKeywordModal">set list</a>
-                                                </label>
-                                                <label htmlFor="restricted_words" style={{ fontSize: '1.1rem', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                                    Don't Get Items With These Words (Separate with newlines)
-                                                    <textarea id="restricted_words" rows={6} style={{ fontSize: '1.1rem', minHeight: 80, borderRadius: 8, marginTop: 4 }} placeholder="Enter restricted words, one per line"></textarea>
-                                                </label>
-                                                <label htmlFor="product_hunter_supplier" style={{ fontSize: '1.1rem', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                                    Supplier
-                                                    <select id="product_hunter_supplier" style={{ fontSize: '1.1rem', padding: '10px 16px', borderRadius: 8, marginTop: 4 }}>
-                                                        <option value="amazon">Amazon</option>
-                                                        <option value="home-depot">Home Depot</option>
-                                                    </select>
-                                                </label>
-                                            </div>
-                                        )}
-                                    </div>
-                                    {/* Pause/Resume buttons moved to results section */}
+                        <div className="settings-group" style={{ marginBottom: 18 }}>
+                            <button
+                                className={`btn advance-options-btn${!optionsOpen ? ' highlight' : ''}`}
+                                style={{ fontSize: '1.15rem', padding: '12px 28px', width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}
+                                onClick={() => setOptionsOpen(v => !v)}
+                            >
+                                <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    Advance Options
+                                    {!optionsOpen && (
+                                        <span className="more-options-badge" style={{ background: '#ffe066', color: '#222', borderRadius: 8, fontSize: '0.95rem', padding: '2px 10px', marginLeft: 10, fontWeight: 600 }}>
+                                            More options
+                                        </span>
+                                    )}
+                                </span>
+                                <span
+                                    className={`arrow${optionsOpen ? ' open' : ''}`}
+                                    style={{ fontSize: 22, marginLeft: 8, transition: 'transform 0.2s', display: 'inline-block', transform: optionsOpen ? 'rotate(180deg)' : 'rotate(0deg)', color: !optionsOpen ? '#ffb300' : '#7ecbff' }}
+                                >
+                                    ▼
+                                </span>
+                            </button>
+                            {optionsOpen && (
+                                <div className="settings-options-checks" style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 18 }}>
+                                    <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="prioritizeAmazonChoice" defaultChecked /> Amazon Choice (Prioritize)</label>
+                                    <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="prioritizeBestSellers" defaultChecked /> Best Seller (Prioritize)</label>
+                                    <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="sort-by-reviews" defaultChecked /> Sort By: Highest Reviewed</label>
+                                    <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="duplicate_protection" defaultChecked /> Don't Get Duplicate Item</label>
+                                    <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="vero_protection_switch" defaultChecked /> Don't Get VERO Item</label>
+                                    <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="remove_books" defaultChecked /> Remove Books</label>
+                                    <label style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}><input type="checkbox" id="amazon_is_seller" /> Amazon is the Seller</label>
+                                    <label htmlFor="required_keywords_checkbox" style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}>
+                                        <input type="checkbox" id="required_keywords_checkbox" style={{ marginRight: 8 }} /> Required Keywords In Title — <a href="#" id="openKeywordModal">set list</a>
+                                    </label>
+                                    <label htmlFor="restricted_words" style={{ fontSize: '1.1rem', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                        Don't Get Items With These Words (Separate with newlines)
+                                        <textarea id="restricted_words" rows={6} style={{ fontSize: '1.1rem', minHeight: 80, borderRadius: 8, marginTop: 4 }} placeholder="Enter restricted words, one per line"></textarea>
+                                    </label>
+                                    <label htmlFor="product_hunter_supplier" style={{ fontSize: '1.1rem', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                        Supplier
+                                        <select id="product_hunter_supplier" style={{ fontSize: '1.1rem', padding: '10px 16px', borderRadius: 8, marginTop: 4 }}>
+                                            <option value="amazon">Amazon</option>
+                                            <option value="home-depot">Home Depot</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            )}
+                        </div>
+                        {/* Pause/Resume buttons moved to results section */}
                     </div>
                 </div>
             </main>

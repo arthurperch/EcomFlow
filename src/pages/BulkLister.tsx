@@ -84,14 +84,28 @@ type State = typeof defaultState;
 const BulkLister: React.FC = () => {
     const [state, setState] = useState<State>(defaultState);
     const [log, setLog] = useState<string>("");
+    const [statusMap, setStatusMap] = useState<Record<string, { url: string, status: string, message: string }>>({});
+
+    // Extract ASIN from Amazon URL
+    const extractAsin = (url: string): string | null => {
+        const match = url.match(/\/dp\/([A-Z0-9]{10})|\/gp\/product\/([A-Z0-9]{10})|\/ASIN\/([A-Z0-9]{10})/i);
+        return match ? (match[1] || match[2] || match[3]) : null;
+    };
+
     // Handlers
     const handleClear = () => setState(s => ({ ...s, links: "" }));
     const handleReset = () => setState(defaultState);
     const handlePause = () => setState(s => ({ ...s, paused: true }));
     const handleResume = () => setState(s => ({ ...s, paused: false }));
-    const handleStatusReport = () => console.log(state);
-    
-    // eBay Automation - Opens eBay listing page for each Amazon URL
+    const handleStatusReport = () => {
+        console.log('Current State:', state);
+        console.log('Status Map:', statusMap);
+        chrome.storage.local.get(null, (data: any) => {
+            console.log('All Storage:', data);
+        });
+    };
+
+    // eBay Automation - Step 1: Open Amazon tabs to scrape data
     const startEbayAutomation = async (listType: 'opti' | 'seo' | 'standard') => {
         const urls = state.links.split('\n').map(s => s.trim()).filter(Boolean);
         if (!urls.length) {
@@ -101,48 +115,69 @@ const BulkLister: React.FC = () => {
         }
 
         setLog(l => l + `\nStarting ${listType.toUpperCase()}-List automation for ${urls.length} URLs...`);
-        setLog(l => l + '\nOpening eBay listing pages...');
-        setLog(l => l + '\nEach tab will auto-fetch Amazon data and fill the form...');
+        setLog(l => l + '\n📋 STEP 1: Opening Amazon pages to scrape product data...');
 
         try {
+            // Initialize status map
+            const initialStatus: Record<string, { url: string, status: string, message: string }> = {};
+            urls.forEach(url => {
+                const asin = extractAsin(url);
+                if (asin) {
+                    initialStatus[asin] = {
+                        url,
+                        status: 'pending',
+                        message: 'Waiting to scrape...'
+                    };
+                }
+            });
+            setStatusMap(initialStatus);
+
             // Store the list type and URLs for the automation
-            await chrome.storage.local.set({ 
+            await chrome.storage.local.set({
                 automationType: listType,
                 pendingUrls: urls,
-                automationInProgress: true 
+                automationInProgress: true,
+                automationStep: 'scrape_amazon',
+                amazonLinksStatus: Object.values(initialStatus) // Track status like bulk_post
             });
 
-            // Open eBay listing page for each URL with delay between tabs
+            // Process each URL - open Amazon tab to scrape
             for (let i = 0; i < urls.length; i++) {
                 const url = urls[i];
-                setLog(l => l + `\n[${i + 1}/${urls.length}] Processing: ${url}`);
+                const asin = extractAsin(url);
+                setLog(l => l + `\n[${i + 1}/${urls.length}] Opening Amazon: ${url}`);
 
-                // Store individual product data
+                if (asin) {
+                    setLog(l => l + `\n  🔑 ASIN: ${asin}`);
+                }
+
+                // Store individual product data with ASIN
                 await chrome.storage.local.set({
                     [`pendingProduct_${i}`]: {
                         url,
                         amazonUrl: url,
+                        asin: asin || `unknown_${i}`,
                         index: i,
                         total: urls.length,
-                        listType
+                        listType,
+                        scrapingComplete: false,
+                        status: 'pending'
                     }
                 });
 
-                // Open eBay sell page in new tab (will auto-click Create Listing button)
+                // Open Amazon tab to scrape data
                 setTimeout(() => {
-                    chrome.tabs.create({ 
-                        url: 'https://www.ebay.com/sl/sell',
+                    setLog(l => l + `\n  → Scraping product data...`);
+                    chrome.tabs.create({
+                        url: url,
                         active: i === 0 // Only make first tab active
                     });
-                }, i * 800); // 800ms delay to allow time for Amazon fetch
+                }, i * 2000); // 2 second delay between tabs to avoid overwhelming
             }
 
-            setLog(l => l + `\n✓ Opened ${urls.length} eBay listing tabs`);
-            setLog(l => l + '\n✓ Each tab will automatically:');
-            setLog(l => l + '\n  1. Click "Create Listing" button');
-            setLog(l => l + '\n  2. Fetch full product data from Amazon');
-            setLog(l => l + '\n  3. Auto-fill title, description, price, condition, quantity');
-            setLog(l => l + '\n\nPlease wait for auto-fill to complete, then add images and publish!');
+            setLog(l => l + `\n✓ Opened ${urls.length} Amazon tabs for scraping`);
+            setLog(l => l + '\n⏳ Please wait for all tabs to finish scraping...');
+            setLog(l => l + '\n📌 STEP 2 will start automatically: Opening eBay and searching');
         } catch (e) {
             setLog(l => l + `\nError: ${String(e)}`);
             alert('Automation failed: ' + String(e));
@@ -153,6 +188,57 @@ const BulkLister: React.FC = () => {
     const handleOptiList = () => startEbayAutomation('opti');
     const handleSeoList = () => startEbayAutomation('seo');
     const handleStandardList = () => startEbayAutomation('standard');
+
+    // Listen for messages from content scripts
+    React.useEffect(() => {
+        const messageListener = (message: any, _sender: any, sendResponse: (response?: any) => void) => {
+            console.log('📨 Received message in BulkLister:', message);
+
+            if (message.type === 'amazonDataScraped') {
+                const { asin, data } = message;
+                setLog(l => l + `\n✅ Scraped: ${data.title?.substring(0, 40)}... (ASIN: ${asin})`);
+                setStatusMap(prev => ({
+                    ...prev,
+                    [asin]: {
+                        url: data.amazonUrl,
+                        status: 'scraped',
+                        message: 'Data scraped successfully'
+                    }
+                }));
+            } else if (message.type === 'itemListed') {
+                const { asin, message: msg } = message;
+                setLog(l => l + `\n🎉 Listed: ${msg} (ASIN: ${asin})`);
+                setStatusMap(prev => ({
+                    ...prev,
+                    [asin]: {
+                        ...prev[asin],
+                        status: 'listed',
+                        message: msg
+                    }
+                }));
+            } else if (message.type === 'itemFailed') {
+                const { asin, message: msg } = message;
+                setLog(l => l + `\n❌ Failed: ${msg} (ASIN: ${asin})`);
+                setStatusMap(prev => ({
+                    ...prev,
+                    [asin]: {
+                        ...prev[asin],
+                        status: 'failed',
+                        message: msg
+                    }
+                }));
+            }
+
+            sendResponse({ received: true });
+        };
+
+        chrome.runtime.onMessage.addListener(messageListener);
+
+        return () => {
+            chrome.runtime.onMessage.removeListener(messageListener);
+        };
+    }, []);
+
     // Progress bar width
     const progress = Math.min(100, Math.max(0, state.percent));
     return (

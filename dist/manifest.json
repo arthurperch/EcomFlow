@@ -24,10 +24,42 @@
   "content_scripts": [
     {
       "js": [
-        "assets/ebay-automation.ts-2acecc3a.js"
+        "assets/competitor-research.ts-3ebd964e.js"
       ],
       "matches": [
-        "https://www.ebay.com/*"
+        "https://www.ebay.com/usr/*",
+        "https://www.ebay.com/str/*",
+        "https://www.ebay.com/sch/*/m.html*",
+        "https://www.ebay.com/sch/i.html*"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "js": [
+        "assets/automation-commands.ts-loader-cd2a5f76.js",
+        "assets/ebay-automation.ts-eff7f7a2.js",
+        "assets/ebay-sold-items-scanner.ts-e49c0905.js",
+        "assets/ebay-order-extractor.ts-loader-f1919061.js",
+        "assets/ebay-image-search.ts-dddfec08.js"
+      ],
+      "matches": [
+        "https://www.ebay.com/itm/*",
+        "https://www.ebay.com/b/*",
+        "https://www.ebay.com/p/*",
+        "https://www.ebay.com/deals/*",
+        "https://www.ebay.com/myb/*",
+        "https://www.ebay.com/sh/*"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "js": [
+        "assets/automation-commands.ts-loader-cd2a5f76.js",
+        "assets/amazon-scraper.ts-ece8c5e8.js",
+        "assets/amazon-product-overlay.ts-b0046e0b.js"
+      ],
+      "matches": [
+        "https://www.amazon.com/*"
       ],
       "run_at": "document_end"
     }
@@ -35,10 +67,41 @@
   "web_accessible_resources": [
     {
       "matches": [
+        "https://www.ebay.com/*",
+        "https://www.ebay.com/*",
+        "https://www.ebay.com/*",
         "https://www.ebay.com/*"
       ],
       "resources": [
-        "assets/ebay-automation.ts-2acecc3a.js"
+        "assets/competitor-research.ts-3ebd964e.js"
+      ],
+      "use_dynamic_url": false
+    },
+    {
+      "matches": [
+        "https://www.ebay.com/*",
+        "https://www.ebay.com/*",
+        "https://www.ebay.com/*",
+        "https://www.ebay.com/*",
+        "https://www.ebay.com/*",
+        "https://www.ebay.com/*"
+      ],
+      "resources": [
+        "assets/automation-commands.ts-f84fc3bd.js",
+        "assets/ebay-automation.ts-eff7f7a2.js",
+        "assets/ebay-sold-items-scanner.ts-e49c0905.js",
+        "assets/ebay-order-extractor.ts-d635df8c.js",
+        "assets/ebay-image-search.ts-dddfec08.js"
+      ],
+      "use_dynamic_url": false
+    },
+    {
+      "matches": [
+        "https://www.amazon.com/*"
+      ],
+      "resources": [
+        "assets/amazon-scraper.ts-ece8c5e8.js",
+        "assets/amazon-product-overlay.ts-b0046e0b.js"
       ],
       "use_dynamic_url": false
     }

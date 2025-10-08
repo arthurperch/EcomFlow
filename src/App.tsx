@@ -35,10 +35,10 @@ const PopupMenu: React.FC = () => {
         <nav style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 18 }}>
             <button style={menuBtnStyle} onClick={() => openTab("/bulk-lister")}>Open Bulk Lister</button>
             <button style={menuBtnStyle} onClick={() => openTab("/product-hunter")}>Open Product Hunter</button>
+            <button style={menuBtnStyle} onClick={() => openTab("/competitor-research")}>Open Competitor Research</button>
             <a href="#/duplicate-checker" style={menuBtnStyle}>Open Duplicate Checker</a>
             <a href="#/image-template" style={menuBtnStyle}>Open Image Template</a>
             <a href="#/tracker" style={menuBtnStyle}>Open Tracker</a>
-            <a href="#/competitor-research" style={menuBtnStyle}>Open Competitor Research</a>
             <a href="#/boost-my-listings" style={menuBtnStyle}>Boost My Listings</a>
         </nav>
     );
@@ -48,6 +48,7 @@ const App: React.FC = () => {
     const location = useLocation();
     if (location.pathname === "/bulk-lister") return <BulkLister />;
     if (location.pathname === "/product-hunter") return <ProductHunter />;
+    if (location.pathname === "/competitor-research") return <CompetitorResearch />;
     if (location.pathname === "/" || location.hash === "" || location.hash === "#/") {
         return (
             <div className="popup-root" style={{ position: "relative", width: "100%", minHeight: "420px" }}>
