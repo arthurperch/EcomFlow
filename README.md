@@ -12,7 +12,7 @@
 ---
 
 **10 Devices. 100,000 Listings. Fully Automated. AI-Driven.**
-<img width="1107" height="592" alt="image" src="https://github.com/user-attachments/assets/35038b38-ef88-40fc-89bd-52ff803edded" />
+<img width="1024" height="1024" alt="b342ca8e-f291-4e48-aea3-746fe2179ac1" src="https://github.com/user-attachments/assets/7ca9b14e-6069-4270-b599-90b07d392db7" />
 
 </div>
 
@@ -30,10 +30,8 @@ This isn't just automation—it's **intelligent commerce at scale**.
 
 <div align="center">
 
-```
-<img width="1024" height="1024" alt="b342ca8e-f291-4e48-aea3-746fe2179ac1" src="https://github.com/user-attachments/assets/44f05477-512f-448a-a08d-4dce0edc064c" />
 
-```
+
 
 </div>
 
@@ -77,6 +75,7 @@ This isn't just automation—it's **intelligent commerce at scale**.
 ---
 
 ## 🎯 How It Works
+<img width="1107" height="592" alt="image" src="https://github.com/user-attachments/assets/35038b38-ef88-40fc-89bd-52ff803edded" />
 
 ### 1️⃣ **Discovery Phase**
 AI agents continuously scan target marketplaces (eBay, Amazon, AliExpress) looking for:
